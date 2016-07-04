@@ -1,19 +1,26 @@
 #!/bin/bash
 
-# Add these in each region
-# export REGION_NAME="RegionOne"
-# export HOST_FILE="/root/osop/regionone_hosts"
-# export ROLE_DIR="/root/osop"
+# Customed Commands
+titles=(
+  "显示根目录"
+  "显示Home目录"
+  "重启服务器"
+)
+commands=(
+  "ls /"
+  "ls ~"
+  "sudo reboot"
+)
 
-# Contant variables
-DIALOG_CANCEL=1
-DIALOG_ESC=255
+# Customed menu
+MENU_TITLE="NMENU"
 HEIGHT=0
 WIDTH=0
 
+# Confirm dialog
 display_confirm_dialog() {
   # $1 command name
-  if dialog --backtitle $REGION_NAME --yesno "Please confirm again?" $HEIGHT $WIDTH
+  if dialog --backtitle $MENU_TITLE --yesno "Please confirm again?" $HEIGHT $WIDTH
   then
     clear
     echo $1
@@ -26,87 +33,32 @@ display_confirm_dialog() {
   fi
 }
 
+# Run command
 while true; do
   exec 3>&1
   selection=$(dialog \
-    --backtitle $REGION_NAME \
+    --backtitle $MENU_TITLE \
     --clear \
     --cancel-label "Exit" \
     --menu "Please select:" $HEIGHT $WIDTH 0 \
-    "1"  "检查Ceph状态" \
-    "2" "检查基础服务状态" \
-    "3" "检查OpenStack服务状态" \
-    "4" "测试创建云硬盘" \
-    "5"  "测试创建虚拟机" \
-    "6"  "重启Httpd服务" \
-    "7"  "重启Memcache服务" \
-    "8"  "重启Haproxy服务" \
-    "9"  "重启Glance服务" \
-    "10"  "重启Cinder服务" \
-    "11"  "重启neutron-server服务" \
-    "12"  "重启API节点Nova服务" \
-    "13"  "重启nova-compute服务" \
-    2>&1 1>&3)
+    "1" "${titles[0]}" \
+    "2" "${titles[1]}" \
+    "3" "${titles[2]}" \
+     2>&1 1>&3)
   exit_status=$?
   exec 3>&-
   case $exit_status in
-    $DIALOG_CANCEL)
+    1) # DIALOG_CANCEL
       clear
       echo "Program terminated."
       exit
       ;;
-    $DIALOG_ESC)
+    255) # DIALOG_ESC
       clear
       echo "Program aborted." >&2
       exit 1
       ;;
   esac
 
-  case $selection in
-    0 )
-      clear
-      echo "Program terminated."
-      ;;
-    1 )
-      YAML_FILE="check-ceph-status.yaml"
-      ;;
-    2 )
-      YAML_FILE="check-basic-services.yaml"
-      ;;
-    3 )
-      YAML_FILE="check-openstack-services.yaml"
-      ;;
-    4 )
-      YAML_FILE="test-create-volume.yaml"
-      ;;
-    5 )
-      YAML_FILE="test-boot-vm.yaml"
-      ;;
-    6 )
-      YAML_FILE="restart-httpd.yaml"
-      ;;
-    7 )
-      YAML_FILE="restart-memcache.yaml"
-      ;;
-    8 )
-      YAML_FILE="restart-haproxy.yaml"
-      ;;
-    9 )
-      YAML_FILE="restart-glance-service.yaml"
-      ;;
-    10 )
-      YAML_FILE="restart-cinder-service.yaml"
-      ;;
-    11 )
-      YAML_FILE="restart-neutron-server.yaml"
-      ;;
-    12 )
-      YAML_FILE="restart-nova-api-scheduler-conductor.yaml"
-      ;;
-    13 )
-      YAML_FILE="restart-nova-compute.yaml"
-      ;;
-  esac
-  display_confirm_dialog "ansible-playbook -vvv -i $HOST_FILE $ROLE_DIR/$YAML_FILE" 
-
+  display_confirm_dialog "${commands[$selection - 1]}"
 done
