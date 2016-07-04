@@ -1,8 +1,14 @@
 # Nmenu
 
+<div style="text-align:center"><img src ="images/nmenu.png" /></div>
+
 ## Introduction
 
 `nmenu` is the toolkit to run any customized shell command with ncurses menu.
+
+- [x] Support for mice and pointers
+- [x] Support for keyboard shortcuts
+- [x] Support for multiple languages
 
 ## Usage
 
