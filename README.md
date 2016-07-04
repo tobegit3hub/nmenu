@@ -13,7 +13,7 @@
 ## Usage
 
 ```
-wget https://raw.githubusercontent.com/tobegit3hub/nmenu/master/nmenu -o /usr/bin/nmenu
+wget https://raw.githubusercontent.com/tobegit3hub/nmenu/master/nmenu -O /usr/bin/nmenu
 
 chmod +x /usr/bin/nmenu
 
